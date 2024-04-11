@@ -1,0 +1,17 @@
+{
+  "auto_mapping": null,
+  "base_model_name_or_path": "Langboat/bloom-1b4-zh",
+  "inference_mode": true,
+  "num_attention_heads": 16,
+  "num_layers": 24,
+  "num_transformer_submodules": 1,
+  "num_virtual_tokens": 8,
+  "peft_type": "PROMPT_TUNING",
+  "prompt_tuning_init": "TEXT",
+  "prompt_tuning_init_text": "\u4e0b\u9762\u662f\u4e00\u6bb5\u4eba\u4e0e\u673a\u5668\u4eba\u7684\u5bf9\u8bdd\u3002",
+  "revision": null,
+  "task_type": "CAUSAL_LM",
+  "token_dim": 2048,
+  "tokenizer_kwargs": null,
+  "tokenizer_name_or_path": "Langboat/bloom-1b4-zh"
+}

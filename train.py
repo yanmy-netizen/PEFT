@@ -94,17 +94,27 @@ def get_Trainer(args):
         raise ValueError(f"{args.method} does not exist!")
 
     
-    args = TrainingArguments(
+    arg = TrainingArguments(
         output_dir="./" + args.method + "/chatbot",
         per_device_train_batch_size=1,
         gradient_accumulation_steps=8,
         logging_steps=10,
         num_train_epochs=1
     )
+    
+    if args.method == "ia3":
+        arg = TrainingArguments(
+            output_dir="./" + args.method + "/chatbot",
+            per_device_train_batch_size=1,
+            gradient_accumulation_steps=8,
+            logging_steps=10,
+            num_train_epochs=1,
+            learning_rate=3e-3
+        )
 
     trainer = Trainer(
         model=model,
-        args=args,
+        args=arg,
         train_dataset=tokenized_ds,
         data_collator=DataCollatorForSeq2Seq(tokenizer=tokenizer, padding=True),
     )

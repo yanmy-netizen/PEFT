@@ -1,7 +1,7 @@
 import argparse
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq2Seq, TrainingArguments, Trainer, AutoModelForSequenceClassification, TrainerCallback
-from peft import PeftModel, LoraConfig, PrefixTuningConfig, PromptTuningConfig, PromptEncoderConfig, TaskType, get_peft_model, PromptTuningInit, PromptEncoderReparameterizationType
+from peft import PeftModel, LoraConfig, PrefixTuningConfig, PromptTuningConfig, PromptEncoderConfig, TaskType, get_peft_model, PromptTuningInit, PromptEncoderReparameterizationType, IA3Config, PeftConfig
 import os
 
 def get_Trainer(args):
@@ -47,11 +47,11 @@ def get_Trainer(args):
     elif args.method == "lora":
         config = LoraConfig(task_type=TaskType.CAUSAL_LM)
         model = get_peft_model(model, config)
-        print(model.print_trainable_parameters())
+        model.print_trainable_parameters()
     elif args.method == "prefix_tuning":
         config = PrefixTuningConfig(task_type=TaskType.CAUSAL_LM, num_virtual_tokens=10, prefix_projection=True)
         model = get_peft_model(model, config)
-        print(model.print_trainable_parameters())
+        model.print_trainable_parameters()
     elif args.method == "prompt_tuning":
         config = PromptTuningConfig(
                     task_type=TaskType.CAUSAL_LM,
@@ -70,6 +70,22 @@ def get_Trainer(args):
                     encoder_hidden_size=1024
                 )
         model = get_peft_model(model, config)
+    elif args.method == "ia3":
+        config = IA3Config(task_type=TaskType.CAUSAL_LM)
+        model = get_peft_model(model, config)
+        model.print_trainable_parameters()
+    elif args.method == "peft":
+        lora_config = LoraConfig(
+            r=args.lora_r,
+            lora_alpha=args.lora_alpha,
+            target_modules=["q_proj", "v_proj"],
+            lora_dropout=args.lora_dropout,
+            bias="none",
+            task_type="CAUSAL_LM"
+        )
+
+        model = get_peft_model(model, lora_config)
+        model.print_trainable_parameters()
     else:
         raise ValueError(f"{args.method} does not exist!")
 

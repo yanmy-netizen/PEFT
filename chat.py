@@ -1,7 +1,7 @@
 import argparse
 from datasets import Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq2Seq, TrainingArguments, Trainer, AutoModelForSequenceClassification
-from peft import PeftModel
+from peft import PeftModel, LoraConfig
 
 def get_model(method):
     if method == "bitfit":
@@ -21,7 +21,27 @@ def get_model(method):
             pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
         except Exception:
             pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
-        model = PeftModel.from_pretrained(model=pt_model, model_id="./p_tuning/chatbot/checkpoint-1000")        
+        model = PeftModel.from_pretrained(model=pt_model, model_id="./p_tuning/chatbot/checkpoint-1000")  
+    elif method == "ia3":
+        try:
+            pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
+        except Exception:
+            pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
+        model = PeftModel.from_pretrained(model=pt_model, model_id="./ia3/chatbot/checkpoint-1000")  
+    elif method == "peft":
+        try:
+            pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
+        except Exception:
+            pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
+        lora_config = LoraConfig(
+            r=8,
+            lora_alpha=16,
+            target_modules=["q_proj", "v_proj"],
+            lora_dropout=0.05,
+            bias="none",
+            task_type="CAUSAL_LM"
+        )
+        model = PeftModel.from_pretrained(model=pt_model, model_id="./peft/checkpoint-1000", lora_config=lora_config)      
     else:
         raise ValueError(f"{method} does not exist!")
     return model

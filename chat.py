@@ -6,6 +6,10 @@ from peft import PeftModel
 def get_model(method):
     if method == "bitfit":
         model = AutoModelForCausalLM.from_pretrained("./bitfit/chatbot/checkpoint-1000")
+    elif method == "lora":
+        model = AutoModelForCausalLM.from_pretrained("./lora/chatbot/checkpoint-1000")
+    elif method == "prefix_tuning":
+        model = AutoModelForCausalLM.from_pretrained("./bitfit/prefix_tuning/checkpoint-1000")
     else:
         raise ValueError(f"{method} does not exist!")
     return model

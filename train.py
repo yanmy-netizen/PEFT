@@ -1,7 +1,7 @@
 import argparse
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq2Seq, TrainingArguments, Trainer, AutoModelForSequenceClassification, TrainerCallback
-from peft import PeftModel, LoraConfig, PrefixTuningConfig, TaskType, get_peft_model
+from peft import PeftModel, LoraConfig, PrefixTuningConfig, PromptTuningConfig, PromptEncoderConfig, TaskType, get_peft_model, PromptTuningInit, PromptEncoderReparameterizationType
 import os
 
 def get_Trainer(args):
@@ -52,6 +52,24 @@ def get_Trainer(args):
         config = PrefixTuningConfig(task_type=TaskType.CAUSAL_LM, num_virtual_tokens=10, prefix_projection=True)
         model = get_peft_model(model, config)
         print(model.print_trainable_parameters())
+    elif args.method == "prompt_tuning":
+        config = PromptTuningConfig(
+                    task_type=TaskType.CAUSAL_LM,
+                    prompt_tuning_init=PromptTuningInit.TEXT,
+                    prompt_tuning_init_text="Below is a conversation between a person and a chatbot.",
+                    num_virtual_tokens=len(tokenizer("Below is a conversation between a person and a chatbot.")["input_ids"]),
+                    tokenizer_name_or_path="bigscience/bloom-1b1"
+                )
+        model = get_peft_model(model, config)
+    elif args.method == "p_tuning":
+        config = PromptEncoderConfig(
+                    task_type=TaskType.CAUSAL_LM, num_virtual_tokens=10,
+                    encoder_reparameterization_type=PromptEncoderReparameterizationType.MLP,
+                    encoder_dropout=0.1, 
+                    #encoder_num_layers=5, 
+                    encoder_hidden_size=1024
+                )
+        model = get_peft_model(model, config)
     else:
         raise ValueError(f"{args.method} does not exist!")
 

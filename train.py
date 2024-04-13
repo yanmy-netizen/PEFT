@@ -1,7 +1,7 @@
 import argparse
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq2Seq, TrainingArguments, Trainer, AutoModelForSequenceClassification, TrainerCallback
-from peft import PeftModel
+from peft import PeftModel, LoraConfig, PrefixTuningConfig, TaskType, get_peft_model
 import os
 
 def get_Trainer(args):
@@ -44,6 +44,14 @@ def get_Trainer(args):
                 num_param += param.numel()
         all_param = sum(param.numel() for param in model.parameters())
         print(f"trainable params: {num_param} || all params: {all_param} || trainable%: {100*num_param/all_param}")   
+    elif args.method == "lora":
+        config = LoraConfig(task_type=TaskType.CAUSAL_LM)
+        model = get_peft_model(model, config)
+        print(model.print_trainable_parameters())
+    elif args.method == "prefix_tuning":
+        config = PrefixTuningConfig(task_type=TaskType.CAUSAL_LM, num_virtual_tokens=10, prefix_projection=True)
+        model = get_peft_model(model, config)
+        print(model.print_trainable_parameters())
     else:
         raise ValueError(f"{args.method} does not exist!")
 

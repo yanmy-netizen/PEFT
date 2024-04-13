@@ -75,7 +75,7 @@ def get_Trainer(args):
         model = get_peft_model(model, config)
         model.print_trainable_parameters()
     elif args.method == "loha":
-        config = LoHaConfig(task_type=TaskType.CAUSAL_LM, target_modules="all-linear")
+        config = LoHaConfig(task_type=TaskType.CAUSAL_LM, target_modules={'query_key_value'})
         model = get_peft_model(model, config)
         model.print_trainable_parameters()
     elif args.method == "peft":

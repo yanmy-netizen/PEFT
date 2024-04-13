@@ -1,0 +1,18 @@
+{
+  "auto_mapping": null,
+  "base_model_name_or_path": "bigscience/bloom-1b1",
+  "fan_in_fan_out": false,
+  "feedforward_modules": [
+    "mlp.dense_4h_to_h"
+  ],
+  "inference_mode": true,
+  "init_ia3_weights": true,
+  "modules_to_save": null,
+  "peft_type": "IA3",
+  "revision": null,
+  "target_modules": [
+    "query_key_value",
+    "mlp.dense_4h_to_h"
+  ],
+  "task_type": "CAUSAL_LM"
+}

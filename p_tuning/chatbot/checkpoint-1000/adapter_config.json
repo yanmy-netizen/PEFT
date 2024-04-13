@@ -1,6 +1,6 @@
 {
   "auto_mapping": null,
-  "base_model_name_or_path": "Langboat/bloom-1b4-zh",
+  "base_model_name_or_path": "bigscience/bloom-1b1",
   "encoder_dropout": 0.1,
   "encoder_hidden_size": 1024,
   "encoder_num_layers": 5,
@@ -13,5 +13,5 @@
   "peft_type": "P_TUNING",
   "revision": null,
   "task_type": "CAUSAL_LM",
-  "token_dim": 2048
+  "token_dim": 1536
 }

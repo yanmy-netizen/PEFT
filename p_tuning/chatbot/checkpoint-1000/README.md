@@ -1,6 +1,6 @@
 ---
 library_name: peft
-base_model: Langboat/bloom-1b4-zh
+base_model: bigscience/bloom-1b1
 ---
 
 # Model Card for Model ID

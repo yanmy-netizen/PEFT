@@ -1,7 +1,7 @@
 import argparse
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq2Seq, TrainingArguments, Trainer, AutoModelForSequenceClassification, TrainerCallback
-from peft import PeftModel
+from peft import PeftModel,IA3Config,PeftConfig
 import os
 
 def get_Trainer(args):

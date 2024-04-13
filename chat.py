@@ -10,6 +10,16 @@ def get_model(method):
         model = AutoModelForCausalLM.from_pretrained("./lora/chatbot/checkpoint-1000")
     elif method == "prefix_tuning":
         model = AutoModelForCausalLM.from_pretrained("./prefix_tuning/chatbot/checkpoint-1000")
+    elif method == "prompt_tuning":
+        # Load finetuned model directly using from_pretrained has error. Load original pre-trained model first
+        pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1", low_cpu_mem_usage=True)
+        # Then use PeftModel from PEFT package to load the finetuned checkpoint
+        model = PeftModel.from_pretrained(model=pt_model, model_id="./prompt_tuning/chatbot/checkpoint-1000")        
+    elif method == "p_tuning":
+        # Load finetuned model directly has error. Load original pre-trained model first
+        pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1", low_cpu_mem_usage=True)
+        # Then use PeftModel from PEFT package to load the finetuned checkpoint
+        model = PeftModel.from_pretrained(model=pt_model, model_id="./prompt_tuning/chatbot/checkpoint-1000")        
     else:
         raise ValueError(f"{method} does not exist!")
     return model

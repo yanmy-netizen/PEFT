@@ -8,6 +8,8 @@ def get_model(method):
         model = AutoModelForCausalLM.from_pretrained("./bitfit/chatbot/checkpoint-1000")
     elif method == "lora":
         model = AutoModelForCausalLM.from_pretrained("./lora/chatbot/checkpoint-1000")
+    elif method == "loha":
+        model = AutoModelForCausalLM.from_pretrained("./loha/chatbot/checkpoint-1000")
     elif method == "prefix_tuning":
         model = AutoModelForCausalLM.from_pretrained("./prefix_tuning/chatbot/checkpoint-1000")
     elif method == "prompt_tuning":

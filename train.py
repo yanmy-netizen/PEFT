@@ -1,7 +1,7 @@
 import argparse
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq2Seq, TrainingArguments, Trainer, AutoModelForSequenceClassification, TrainerCallback
-from peft import PeftModel, LoraConfig, PrefixTuningConfig, PromptTuningConfig, PromptEncoderConfig, TaskType, get_peft_model, PromptTuningInit, PromptEncoderReparameterizationType, IA3Config, PeftConfig
+from peft import PeftModel, LoraConfig, LoHaConfig, PrefixTuningConfig, PromptTuningConfig, PromptEncoderConfig, TaskType, get_peft_model, PromptTuningInit, PromptEncoderReparameterizationType, IA3Config, PeftConfig
 import os
 
 def get_Trainer(args):
@@ -72,6 +72,10 @@ def get_Trainer(args):
         model = get_peft_model(model, config)
     elif args.method == "ia3":
         config = IA3Config(task_type=TaskType.CAUSAL_LM)
+        model = get_peft_model(model, config)
+        model.print_trainable_parameters()
+    elif args.method == "loha":
+        config = LoHaConfig(task_type=TaskType.CAUSAL_LM, target_modules="all-linear")
         model = get_peft_model(model, config)
         model.print_trainable_parameters()
     elif args.method == "peft":

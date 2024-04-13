@@ -11,14 +11,16 @@ def get_model(method):
     elif method == "prefix_tuning":
         model = AutoModelForCausalLM.from_pretrained("./prefix_tuning/chatbot/checkpoint-1000")
     elif method == "prompt_tuning":
-        # Load finetuned model directly using from_pretrained has error. Load original pre-trained model first
-        pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1", low_cpu_mem_usage=True)
-        # Then use PeftModel from PEFT package to load the finetuned checkpoint
+        try:
+            pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
+        except Exception:
+            pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
         model = PeftModel.from_pretrained(model=pt_model, model_id="./prompt_tuning/chatbot/checkpoint-1000")        
     elif method == "p_tuning":
-        # Load finetuned model directly has error. Load original pre-trained model first
-        pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1", low_cpu_mem_usage=True)
-        # Then use PeftModel from PEFT package to load the finetuned checkpoint
+        try:
+            pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
+        except Exception:
+            pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
         model = PeftModel.from_pretrained(model=pt_model, model_id="./p_tuning/chatbot/checkpoint-1000")        
     else:
         raise ValueError(f"{method} does not exist!")
@@ -39,13 +41,13 @@ def main():
     print("Load model successly! How can I help you today? Type 'exit' to quit.")
     
     while True:
-        command = input("Question: ")
+        command = input("Human: ")
         if command == "exit":
             print("Exiting program.")
             break
         ipt = tokenizer("Human: {}\n{}".format(command, "").strip() + "\n\nAssistant: ", return_tensors="pt")
-        result = tokenizer.decode(model.generate(**ipt, max_length=128, do_sample=True)[0], skip_special_tokens=True)
-        print(f"Output: {result}")
+        result = tokenizer.decode(model.generate(**ipt, max_length=128, do_sample=True)[0], skip_special_tokens=True).replace("Human: " + command, "")
+        print(f"{result}")
 
 if __name__ == '__main__':
     main()

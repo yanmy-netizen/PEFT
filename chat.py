@@ -4,47 +4,48 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq
 from peft import PeftModel, LoraConfig
 
 def get_model(method):
+    model_path = f"./{method}/checkpoint"
     if method == "bitfit":
-        model = AutoModelForCausalLM.from_pretrained("./bitfit/chatbot/checkpoint-1000")
+        model = AutoModelForCausalLM.from_pretrained(model_path)
     elif method == "lora":
-        model = AutoModelForCausalLM.from_pretrained("./lora/chatbot/checkpoint-1000")
+        model = AutoModelForCausalLM.from_pretrained(model_path)
     elif method == "loha":
-        model = AutoModelForCausalLM.from_pretrained("./loha/chatbot/checkpoint-1000")
+        model = AutoModelForCausalLM.from_pretrained(model_path)
     elif method == "prefix_tuning":
-        model = AutoModelForCausalLM.from_pretrained("./prefix_tuning/chatbot/checkpoint-1000")
+        model = AutoModelForCausalLM.from_pretrained(model_path)
     elif method == "prompt_tuning":
         try:
             pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
         except Exception:
             pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
-        model = PeftModel.from_pretrained(model=pt_model, model_id="./prompt_tuning/chatbot/checkpoint-1000")        
+        model = PeftModel.from_pretrained(model=pt_model, model_id=model_path)        
     elif method == "p_tuning":
         try:
             pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
         except Exception:
             pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
-        model = PeftModel.from_pretrained(model=pt_model, model_id="./p_tuning/chatbot/checkpoint-1000")  
+        model = PeftModel.from_pretrained(model=pt_model, model_id=model_path)  
     elif method == "ia3":
         try:
             pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
         except Exception:
             pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
-        model = PeftModel.from_pretrained(model=pt_model, model_id="./ia3/chatbot/checkpoint-1000")  
-    elif method == "peft":
-        try:
-            pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
-        except Exception:
-            pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
-        # lora_config = LoraConfig(
-        #     r=8,
-        #     lora_alpha=16,
-        #     target_modules=["q_proj", "v_proj"],
-        #     lora_dropout=0.05,
-        #     bias="none",
-        #     task_type="CAUSAL_LM"
-        # )
-        # model = PeftModel.from_pretrained(model=pt_model, model_id="./peft/checkpoint-1000", lora_config=lora_config) 
-        model = PeftModel.from_pretrained(model=pt_model, model_id="./peft/checkpoint-1000")     
+        model = PeftModel.from_pretrained(model=pt_model, model_id=model_path)  
+    # elif method == "peft":
+    #     try:
+    #         pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
+    #     except Exception:
+    #         pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
+    #     # lora_config = LoraConfig(
+    #     #     r=8,
+    #     #     lora_alpha=16,
+    #     #     target_modules=["q_proj", "v_proj"],
+    #     #     lora_dropout=0.05,
+    #     #     bias="none",
+    #     #     task_type="CAUSAL_LM"
+    #     # )
+    #     # model = PeftModel.from_pretrained(model=pt_model, model_id="./peft/checkpoint-1000", lora_config=lora_config) 
+    #     model = PeftModel.from_pretrained(model=pt_model, model_id="./peft/checkpoint-1000")     
     else:
         raise ValueError(f"{method} does not exist!")
     return model

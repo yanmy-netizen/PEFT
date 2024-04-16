@@ -151,7 +151,7 @@ class LossLoggingCallback(TrainerCallback):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=str, default='bitfit')
-    parser.add_argument('--size', type=int, default='800')
+    parser.add_argument('--size', type=int, default='80000')
     parser.add_argument('--epoch', type=int, default='2')
     
     args = parser.parse_args()

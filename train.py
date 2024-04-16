@@ -100,16 +100,22 @@ def get_Trainer(args):
         per_device_train_batch_size=1,
         gradient_accumulation_steps=8,
         logging_steps=10,
-        num_train_epochs=1
+        evaluation_strategy="epoch",
+        num_train_epochs=args.epoch,
     )
     
     if args.method == "ia3" or args.method == "loha":
         arg.learning_rate=3e-3
+        
+    split_datasets = tokenized_ds.train_test_split(test_size=0.2)
+    train_dataset = split_datasets['train']
+    eval_dataset = split_datasets['test']
 
     trainer = Trainer(
         model=model,
         args=arg,
-        train_dataset=tokenized_ds,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
         data_collator=DataCollatorForSeq2Seq(tokenizer=tokenizer, padding=True),
     )
     
@@ -122,20 +128,31 @@ class LossLoggingCallback(TrainerCallback):
         
         os.makedirs(self.output_dir, exist_ok=True)
         
-        losses_path = f"{self.output_dir}/10_epochs_losses.txt"
+        losses_path = f"{self.output_dir}/10_epochs_train_losses.txt"
+        if os.path.exists(losses_path):
+            open(losses_path, 'w').close()
+        eval_path = f"{self.output_dir}/10_epochs_eval_losses.txt"
         if os.path.exists(losses_path):
             open(losses_path, 'w').close()
 
     def on_log(self, args, state, control, logs=None, **kwargs):
         if 'loss' in logs:
             self.losses.append(logs['loss'])
-            with open(f"{self.output_dir}/10_epochs_losses.txt", "a") as f:
+            with open(f"{self.output_dir}/10_epochs_train_losses.txt", "a") as f:
                 f.write(f"{state.global_step}: {logs['loss']}\n")
+
+    def on_evaluate(self, args: TrainingArguments, state, control, metrics=None, **kwargs):
+        if metrics and 'eval_loss' in metrics:
+            eval_loss = metrics['eval_loss']
+            print(f"Evaluation Loss at Epoch {state.epoch}: {eval_loss}")
+            with open(f"{self.output_dir}/10_epochs_eval_losses.txt", "a") as f:
+                f.write(f"{state.epoch}: {eval_loss}\n")
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=str, default='bitfit')
-    parser.add_argument('--size', type=int, default='80000')
+    parser.add_argument('--size', type=int, default='800')
+    parser.add_argument('--epoch', type=int, default='2')
     
     args = parser.parse_args()
     

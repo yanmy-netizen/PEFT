@@ -5,14 +5,16 @@ from peft import PeftModel, LoraConfig, LoHaConfig, PrefixTuningConfig, PromptTu
 import os
 
 def get_Trainer(args):
-    try:
-        tokenizer = AutoTokenizer.from_pretrained("./bloom-1b1")
-    except Exception:
-        tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-1b1")
-    try:
-        model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
-    except Exception:
-        model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
+    tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-1b1")
+    model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
+    # try:
+    #     tokenizer = AutoTokenizer.from_pretrained("./bloom-1b1")
+    # except Exception:
+    #     tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-1b1")
+    # try:
+    #     model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
+    # except Exception:
+    #     model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
     split = 'train[:' + str(args.size) + ']'
     ds = load_dataset("yahma/alpaca-cleaned", split=split)
     def process_func(example):
@@ -92,7 +94,6 @@ def get_Trainer(args):
         model.print_trainable_parameters()
     else:
         raise ValueError(f"{args.method} does not exist!")
-
     
     arg = TrainingArguments(
         output_dir="./" + args.method + "/chatbot",
@@ -102,15 +103,8 @@ def get_Trainer(args):
         num_train_epochs=1
     )
     
-    if args.method == "ia3":
-        arg = TrainingArguments(
-            output_dir="./" + args.method + "/chatbot",
-            per_device_train_batch_size=1,
-            gradient_accumulation_steps=8,
-            logging_steps=10,
-            num_train_epochs=1,
-            learning_rate=3e-3
-        )
+    if args.method == "ia3" or args.method == "loha":
+        arg.learning_rate=3e-3
 
     trainer = Trainer(
         model=model,
@@ -128,26 +122,33 @@ class LossLoggingCallback(TrainerCallback):
         
         os.makedirs(self.output_dir, exist_ok=True)
         
-        losses_path = f"{self.output_dir}/losses.txt"
+        losses_path = f"{self.output_dir}/10_epochs_losses.txt"
         if os.path.exists(losses_path):
             open(losses_path, 'w').close()
 
     def on_log(self, args, state, control, logs=None, **kwargs):
         if 'loss' in logs:
             self.losses.append(logs['loss'])
-            with open(f"{self.output_dir}/losses.txt", "a") as f:
+            with open(f"{self.output_dir}/10_epochs_losses.txt", "a") as f:
                 f.write(f"{state.global_step}: {logs['loss']}\n")
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--method', type=str, default='bitfit')
-    parser.add_argument('--size', type=int, default='8000')
+    parser.add_argument('--size', type=int, default='80000')
     
     args = parser.parse_args()
+    
+    if not os.path.exists(f"./{args.method}/checkpoint/"):
+        os.makedirs(f"./{args.method}/checkpoint/", exist_ok=True)
+        
+    if not os.path.exists(f"./{args.method}/chatbot/"):
+        os.makedirs(f"./{args.method}/chatbot/", exist_ok=True)
     
     trainer = get_Trainer(args)
     trainer.add_callback(LossLoggingCallback(output_dir="./"+args.method))
     trainer.train()
+    trainer.save_model(f"./{args.method}/checkpoint/")
     print("train finished.")
 
 if __name__ == '__main__':

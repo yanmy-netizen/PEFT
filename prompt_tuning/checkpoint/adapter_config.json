@@ -1,0 +1,17 @@
+{
+  "auto_mapping": null,
+  "base_model_name_or_path": "bigscience/bloom-1b1",
+  "inference_mode": true,
+  "num_attention_heads": 16,
+  "num_layers": 24,
+  "num_transformer_submodules": 1,
+  "num_virtual_tokens": 12,
+  "peft_type": "PROMPT_TUNING",
+  "prompt_tuning_init": "TEXT",
+  "prompt_tuning_init_text": "Below is a conversation between a person and a chatbot.",
+  "revision": null,
+  "task_type": "CAUSAL_LM",
+  "token_dim": 1536,
+  "tokenizer_kwargs": null,
+  "tokenizer_name_or_path": "bigscience/bloom-1b1"
+}

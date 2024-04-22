@@ -3,6 +3,7 @@ from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq2Seq, TrainingArguments, Trainer, AutoModelForSequenceClassification, TrainerCallback
 from peft import PeftModel, LoraConfig, LoHaConfig, PrefixTuningConfig, PromptTuningConfig, PromptEncoderConfig, TaskType, get_peft_model, PromptTuningInit, PromptEncoderReparameterizationType, IA3Config, PeftConfig
 import os
+import torch
 
 def get_Trainer(args):
     tokenizer = AutoTokenizer.from_pretrained("bigscience/bloom-1b1")
@@ -102,6 +103,7 @@ def get_Trainer(args):
         logging_steps=10,
         evaluation_strategy="epoch",
         num_train_epochs=args.epoch,
+        no_cuda=False,
     )
     
     if args.method == "ia3" or args.method == "loha":
@@ -161,6 +163,9 @@ def main():
         
     if not os.path.exists(f"./{args.method}/chatbot/"):
         os.makedirs(f"./{args.method}/chatbot/", exist_ok=True)
+        
+    if not torch.cuda.is_available():
+        raise RuntimeError("This script requires a GPU to run, but no GPU is detected.")
     
     trainer = get_Trainer(args)
     trainer.add_callback(LossLoggingCallback(output_dir="./"+args.method))

@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForSeq
 from peft import PeftModel, LoraConfig
 
 def get_model(method):
-    model_path = f"./{method}/checkpoint"
+    model_path = f"./{method}/chatbot/checkpoint-10000"
     if method == "bitfit":
         model = AutoModelForCausalLM.from_pretrained(model_path)
     elif method == "lora":
@@ -52,7 +52,7 @@ def get_model(method):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--method', type=str, default='bitfit')
+    parser.add_argument('--method', type=str, default='loha')
     
     args = parser.parse_args()
     

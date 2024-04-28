@@ -127,7 +127,7 @@ ft_model.eval()
 
 pred_ft = []
 with torch.no_grad():
-    for data in tqdm(eval_set, desc=f'Generating model {arg.methods} outputs'):
+    for data in tqdm(eval_set, desc=f'Generating model {args.method} outputs'):
         output = generate_model_output(model=ft_model,instruction=data['instruction'])
         pred_ft.append(output)
 

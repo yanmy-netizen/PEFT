@@ -110,12 +110,12 @@ def generate_model_output(model, instruction):
 base_model.cuda()
 base_model.eval()
 
-pred_base = []
+# pred_base = []
 
-with torch.no_grad():
-    for data in tqdm(eval_set, desc='Generating base model outputs'):
-        output = generate_model_output(model=base_model, instruction=data['instruction'])
-        pred_base.append(output)
+# with torch.no_grad():
+#     for data in tqdm(eval_set, desc='Generating base model outputs'):
+#         output = generate_model_output(model=base_model, instruction=data['instruction'])
+#         pred_base.append(output)
 
 ft_model = get_model(args.method)
 print(f"Load model {args.method} successly!")
@@ -135,16 +135,16 @@ ref = []
 for data in eval_set:
     ref.append(data['output'])
 
-base_bleu = eval_bleu.compute(predictions = pred_base, references= ref)
-base_rouge = eval_rouge.compute(predictions = pred_base, references= ref)
+# base_bleu = eval_bleu.compute(predictions = pred_base, references= ref)
+# base_rouge = eval_rouge.compute(predictions = pred_base, references= ref)
 
-base_bert = eval_bertscore.compute(predictions=pred_base, references=ref, lang="en")
-base_bert = base_bert['precision']
+# base_bert = eval_bertscore.compute(predictions=pred_base, references=ref, lang="en")
+# base_bert = base_bert['precision']
 
-print(base_bleu)
-print(base_rouge)
-print("Average bertscore precision: ")
-print(sum(base_bert)/len(base_bert))
+# print(base_bleu)
+# print(base_rouge)
+# print("Average bertscore precision: ")
+# print(sum(base_bert)/len(base_bert))
 
 ft_bleu = eval_bleu.compute(predictions = pred_ft, references= ref)
 ft_rouge = eval_rouge.compute(predictions = pred_ft, references= ref)

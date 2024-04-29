@@ -34,7 +34,10 @@ def get_model(method):
     elif method == "loha":
         model = AutoModelForCausalLM.from_pretrained(model_path)
     elif method == "prefix_tuning":
-        model = AutoModelForCausalLM.from_pretrained(model_path)
+        try:
+            pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")
+        except Exception:
+            pt_model = AutoModelForCausalLM.from_pretrained("bigscience/bloom-1b1")
     elif method == "prompt_tuning":
         try:
             pt_model = AutoModelForCausalLM.from_pretrained("./bloom-1b1")

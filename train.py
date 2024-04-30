@@ -64,6 +64,7 @@ def get_Trainer(args):
                     tokenizer_name_or_path="bigscience/bloom-1b1"
                 )
         model = get_peft_model(model, config)
+        model.print_trainable_parameters()
     elif args.method == "p_tuning":
         config = PromptEncoderConfig(
                     task_type=TaskType.CAUSAL_LM, num_virtual_tokens=10,
@@ -73,6 +74,7 @@ def get_Trainer(args):
                     encoder_hidden_size=1024
                 )
         model = get_peft_model(model, config)
+        model.print_trainable_parameters()
     elif args.method == "ia3":
         config = IA3Config(task_type=TaskType.CAUSAL_LM)
         model = get_peft_model(model, config)

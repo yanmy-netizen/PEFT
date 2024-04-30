@@ -11,9 +11,6 @@ To install the required dependencies, run the following command in your terminal
 pip install -r requirements.txt
 ```
 
-You can update the `README.md` file with additional details about the available training methods and further instructions on what to do after training the model. Here’s the revised `Usage` section with the enhancements you suggested:
-
-```markdown
 ## Usage
 
 ### Training the Model
